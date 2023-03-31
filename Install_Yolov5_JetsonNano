@@ -1,0 +1,115 @@
+[1] SD Image From official website (Jetpack 4.5, Jetbot 0.4.3)
+
+https://jetbot.org/master/software_setup/sd_card.html
+
+[2] Free root restriction, because we will use a lot of root commands in the following code commands.
+
+sudo passwd root
+
+[3] Setup CUDA as current working environment (open edit file)
+gedit ~/.bashrc
+
+[4] Insert those code below to modify GPU environment, then close it
+export PATH=/usr/local/cuda-10.2/bin${PATH:+:${PATH}}
+export LD_LIBRARY_PATH=/usr/local/cuda-10.2/lib64${LD_LIBRARY_PATH:+:${LD_LIBRARY_PATH}}
+export CUDA_ROOT=/usr/local/cuda
+
+[5] Set the CUDA environment
+source ~/.bashrc
+
+[6] install pip
+sudo apt-get update
+sudo apt-get install python3-pip python3-dev -y
+
+[7] install some libraries or dependencies or environment for Yolov5
+sudo apt-get install build-essential make cmake cmake-curses-gui -y
+sudo apt-get install git g++ pkg-config curl -y
+sudo apt-get install libatlas-base-dev gfortran libcanberra-gtk-module libcanberra-gtk3-module -y
+sudo apt-get install libhdf5-serial-dev hdf5-tools -y
+sudo apt-get install nano locate screen -y
+sudo apt-get install libfreetype6-dev -y
+sudo apt-get install libssl-dev libcurl4-openssl-dev -y
+sudo apt-get install cython3 -y
+
+[8] Install some dependencies for Opencv
+sudo apt-get install build-essential -y
+sudo apt-get install cmake git libgtk2.0-dev pkg-config libavcodec-dev libavformat-dev libswscale-dev -y
+sudo apt-get install python-dev python-numpy libtbb2 libtbb-dev libjpeg-dev libpng-dev libtiff5-dev libdc1394-22-dev -y
+sudo apt-get install libavcodec-dev libavformat-dev libswscale-dev libv4l-dev liblapacke-dev -y
+sudo apt-get install libxvidcore-dev libx264-dev -y
+sudo apt-get install libatlas-base-dev gfortran -y
+sudo apt-get install ffmpeg -y
+
+[9] Update Cmake
+wget http://www.cmake.org/files/v3.13/cmake-3.13.0.tar.gz
+tar xpvf cmake-3.13.0.tar.gz cmake-3.13.0/
+cd cmake-3.13.0/
+./bootstrap --system-curl
+make -j4
+echo 'export PATH=~/cmake-3.13.0/bin/:$PATH' >> ~/.bashrc
+source ~/.bashrc
+sudo apt-get install exfat-utils
+
+[10]  install some dependencies before install Pytorch and Torchvision
+sudo apt-get install libopenmpi2
+sudo apt-get install libopenblas-dev
+sudo apt-get install libjpeg-dev zlib1g-dev
+pip3 install numpy==1.19.4
+
+[11] install Pytorch 1.8, and Torchvision 0.9.0 (Match CUDA version: 10.2 )
+## install pytorch 1.8: https://forums.developer.nvidia.com/t/pytorch-for-jetson/72048
+pip3 install torch-1.8.0-cp36-cp36m-linux_aarch64.whl
+git clone --branch v0.9.1 https://github.com/pytorch/vision torchvision
+cd torchvision
+export BUILD_VERSION=0.9.0
+sudo python3 setup.py install
+
+[12] Clone Yolov5 package from github
+git clone https://github.com/ultralytics/yolov5.git
+cd yolov5
+export OPENBLAS_CORETYPE=ARMV8
+
+[13] Install Yolov5 libraries # matplotlib 3.2.2 matches python 3.6.9
+## Here I didn’t install all of the libraries from requirements.txt,
+##because I had some errors. Thus, I chose to install the libraries one by one.
+sudo pip3 install matplotlib==3.2.2
+sudo pip3 install --upgrade Cython
+sudo apt-get remove python-numpy
+sudo pip3 install numpy==1.19.4
+sudo pip3 install scipy==1.4.1
+sudo pip3 install tqdm==4.61.2
+sudo pip3 install seaborn==0.11.1
+sudo pip3 install scikit-build==0.11.1
+sudo pip3 install opencv-python==4.5.3.56
+sudo pip3 install tensorboard==2.5.0
+sudo pip3 install --upgrade PyYAML
+sudo pip3 install thop
+sudo pip3 install pycocotools
+
+[14] Should be sscessful, test Yolov5
+python3 detect.py
+# OR
+python3 detect.py --weights yolov5s.pt --source 0 --device 0
+## Source is camera (if there are many webcams, it can be switch from the number to number), device is GPU.
+## seemingly, the yolo only can run on webcam, so I use webcam and change source to 1.
+
+# Troubleshooting
+Error:
+
+SyntaxError: future feature annotations is not defined
+
+Solution:
+
+pip3 install 'pillow<9'
+
+Reference:
+
+[1] Sahil Chachra. “Setting up Nvidia’s Jetson Nano : From Jetpack to YoloV5”.
+
+https://sahilchachra.medium.com/setting-up-nvidias-jetson-nano-from-jetpack-to-yolov5-60a004bf48bc
+
+[2] https://blog.csdn.net/IamYZD/article/details/119618950?ops_request_misc=%257B%2522request%255Fid%2522%253A%2522167640230516800180612450%2522%252C%2522scm%2522%253A%252220140713.130102334.pc%255Fall.%2522%257D&request_id=167640230516800180612450&biz_id=0&utm_medium=distribute.pc_search_result.none-task-blog-2~all~first_rank_ecpm_v1~hot_rank-1-119618950-null-null.142^v73^insert_down4,201^v4^add_ask,239^v1^control&utm_term=jetson%20nano%20%E9%83%A8%E7%BD%B2%20yolov5&spm=1018.2226.3001.4187
+
+
+
+
