@@ -1,0 +1,109 @@
+Jetson Nano Optimizes Yolov5 by using Tensorrt - Deepstream
+
+[1] Copy the tensorrt package from github
+git clone https://github.com/wang-xinyu/tensorrtx.git
+
+[2] convert .pt file to .wts file
+cd tensorrtx
+cp yolov5/gen_wts.py ~/yolov5
+cd ~/yolov5
+python gen_wts.py -w yolov5s.pt -o yolov5s.wts
+
+[3] Generate engine file
+cd ~/tensorrtx/yolov5
+mkdir build && cd build
+mv ~/yolov5/yolov5s.wts ./
+cmake ..
+make
+./yolov5_det -s yolov5s.wts yolov5s.engine s
+## if you have any error or issue on [2][3], please visit github
+## https://github.com/wang-xinyu/tensorrtx/tree/master/yolov5
+# if you want to build custom model, that has to modify the file.
+# detail refer from github
+
+[4] Install dependent for deepsteam and
+sudo apt install \
+libssl1.0.0 \
+libgstreamer1.0-0 \
+gstreamer1.0-tools \
+gstreamer1.0-plugins-good \
+gstreamer1.0-plugins-bad \
+gstreamer1.0-plugins-ugly \
+gstreamer1.0-libav \
+libgstrtspserver-1.0-0 \
+libjansson4=2.11-1 \
+libgstrtspserver-1.0-dev \
+libyaml-cpp-dev
+
+[5] Download deepstream 5.1
+# DeepStream Link
+https://developer.nvidia.com/deepstream-sdk-v510-jetsontbz2
+
+# replace deepstream_sdk_v6.2.0_jetson.tbz2 to file name
+sudo tar -xvf deepstream_sdk_v6.2.0_jetson.tbz2 -C /
+cd /opt/nvidia/deepstream/deepstream-5.1
+sudo ./install.sh
+sudo ldconfig
+
+git clone https://gitee.com/mirrorgit/librdkafka
+cd librdkafka
+git reset --hard 7101c2310341ab3f4675fc565f64f0967e135a6a
+./configure
+make -j4
+sudo make install
+sudo mkdir -p /opt/nvidia/deepstream/deepstream-5.1/lib
+sudo cp /usr/local/lib/librdkafka* /opt/nvidia/deepstream/deepstream-5.1/lib
+# ## if you have any error or issue on [4][5], please visit deepstream web
+# https://docs.nvidia.com/metropolis/deepstream/dev-guide/text/DS_Quickstart.html#jetson-setup
+
+[6] we can test deepsteam out,
+cd opt/nvidia/deepstream/deepstream-5.1/samples/configs/deepstream-app
+deepstream-app -c source8_1080p_dec_infer-resnet_tracker_tiled_display_fp16_nano.txt
+
+[7] Download deploy yolov5 in deepsteam package
+git clone https://github.com/DanaHan/Yolov5-in-Deepstream-5.0.git
+
+[8] move label to deepsteam file
+cd Yolov5-in-Deepstream-5.0/Deepstream 5.0
+cp ~/darknet/data/coco.names ./labels.txt
+## if you use cosutom model, need to modify config_infer_primary_yoloV5.txt
+
+[9] move engine file and libmyplugins file to deepsteam
+cd Yolov5-in-Deepstream-5.0/Deepstream 5.0
+cp ~/tensorrtx/yolov5/build/yolov5s.engine ./
+cp ~/tensorrtx/yolov5/build/libmyplugins.so ./
+
+[10] run the deepsteam for yolov5
+cd Yolov5-in-Deepstream-5.0/Deepstream 5.0
+LD_PRELOAD=./libmyplugins.so deepstream-app -c deepstream_app_config_yoloV5.txt
+
+# if you got path error, go to the deepstream_app_config_yoloV5.txt file
+# to check the URL path is correct through the video.
+[11] if you want to use csi camera, comment section of [source 0], paster below code to the file
+[source0]
+enable=1
+type=5
+camera-width=640
+camera-height=480
+camera-fps-n=30
+camera-fps-d=1
+camera-v412-dev-node=0
+
+References:
+https://blog.csdn.net/ailaier/article/details/116270962?ops_request_misc=&request_id=&biz_id=102&utm_term=jetson%20nano%20%E9%83%A8%E7%BD%B2yolov5%20tensorrt&utm_medium=distribute.pc_search_result.none-task-blog-2~all~sobaiduweb~default-7-116270962.142^v80^insert_down1,201^v4^add_ask,239^v2^insert_chatgpt&spm=1018.2226.3001.4187
+https://blog.csdn.net/qq_56548850/article/details/124256112?ops_request_misc=&request_id=&biz_id=102&utm_term=jetson%20nano%20%E9%83%A8%E7%BD%B2yolov5%20tensorrt&utm_medium=distribute.pc_search_result.none-task-blog-2~all~sobaiduweb~default-6-124256112.142^v80^insert_down1,201^v4^add_ask,239^v2^insert_chatgpt&spm=1018.2226.3001.4187
+https://sahilchachra.medium.com/run-yolov5s-with-tensorrt-and-deepstream-on-nvidia-jetson-nano-8c888a2f0eae
+
+Software Web:
+DeepSteam: https://docs.nvidia.com/metropolis/deepstream/dev-guide/text/DS_Quickstart.html#jetson-setup
+Tensorrx: https://github.com/wang-xinyu/tensorrtx/tree/master/yolov5
+DeepSteam-Yolo: https://github.com/DanaHan/Yolov5-in-Deepstream-5.0
+
+Might useful Web:
+DeepSteam-Yolo official web: https://github.com/marcoslucianops/DeepStream-Yolo
+Darknet: https://github.com/AlexeyAB/darknet
+
+
+
+
+
