@@ -56,39 +56,37 @@ while ok:
     
    
     contours, _ = cv.findContours(mask3, cv.RETR_EXTERNAL, cv.CHAIN_APPROX_SIMPLE)
-    
-    maxArea = 0
-    maxIndex = 0
-    for i, c in enumerate(contours):
-        area = cv.contourArea(c)
-        if area > maxArea:
-            maxArea = area
-            maxIndex = i
-    
-	
-    cv.drawContours(frame, contours, maxIndex, (255, 255, 0), 2)
-   
-    x, y, w, h = cv.boundingRect(contours[maxIndex])
-    cv.rectangle(frame, (x, y), (x+w, y+h), (255, 0, 0), 2)
-    
-    center_x = int(x + w/2)
-    center_y = int(y + h/2)
-    cv.circle(frame, (center_x, center_y), 5, (0, 0, 255), -1)
 
-    
-    if center_x < screen_center - offset:
-              
-        dire = "turn left"
+    if not contours:
+        dire = "no target"
         print(dire)
-    elif screen_center - offset <= center_x <= screen_center + offset:
-        
-        dire = "keep"
-        
-        print(dire)
-    elif center_x > screen_center + offset:
-        
-        dire = "turn right"
-        print(dire)
+    else:
+        maxArea = 0
+        maxIndex = 0
+        for i, c in enumerate(contours):
+            area = cv.contourArea(c)
+            if area > maxArea:
+                maxArea = area
+                maxIndex = i
+
+        cv.drawContours(frame, contours, maxIndex, (255, 255, 0), 2)
+
+        x, y, w, h = cv.boundingRect(contours[maxIndex])
+        cv.rectangle(frame, (x, y), (x+w, y+h), (255, 0, 0), 2)
+
+        center_x = int(x + w/2)
+        center_y = int(y + h/2)
+        cv.circle(frame, (center_x, center_y), 5, (0, 0, 255), -1)
+
+        if center_x < screen_center - offset:
+            dire = "turn left"
+            print(dire)
+        elif screen_center - offset <= center_x <= screen_center + offset:
+            dire = "keep"
+            print(dire)
+        else:
+            dire = "turn right"
+            print(dire)
 
     cv.imshow("mask4", mask3)
     cv.imshow("frame", frame)

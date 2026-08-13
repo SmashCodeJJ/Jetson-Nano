@@ -27,6 +27,17 @@ This research explores computer vision and deep learning on an NVIDIA Jetson Nan
 
 Running a neural network on the Jetson Nano GPU is significantly faster than on CPU. GPU acceleration is essential for real-time robotic vision workloads on embedded hardware.
 
+**Verified benchmark (ResNet50, batch=32):**
+
+| Device | Avg Batch Time | Notes |
+|--------|----------------|-------|
+| CPU | 3314 ms | Mac re-run (Aug 2026) |
+| GPU/MPS | 195 ms | **17x speedup** vs CPU |
+
+> Original Jetson Nano measurements used CUDA on embedded GPU. Relative speedup confirms GPU acceleration is critical for real-time inference.
+
+Run locally: `python scripts/run_cpu_gpu_benchmark.py` → saves `results/cpu_gpu_benchmark.json`
+
 ### YOLOv5 Object Detection — GPU vs TensorRT
 
 | Configuration | FPS |
@@ -66,7 +77,7 @@ A custom PyTorch classifier distinguishes **Free** vs **Block** space using the 
 
 When the camera detects an obstacle (`Block`), the robot turns; in open space (`Free`), it moves forward.
 
-> Collision avoidance notebooks and training code are in the bundled [JetBot](https://github.com/NVIDIA-AI-IOT/jetbot) examples under `../jetbot/notebooks/collision_avoidance/`.
+> Collision avoidance notebooks are included in [`notebooks/collision_avoidance/`](notebooks/collision_avoidance/) (data collection, ResNet18 training, live demo, TensorRT build).
 
 ---
 
@@ -74,16 +85,19 @@ When the camera detects an obstacle (`Block`), the robot turns; in open space (`
 
 ```
 Jetson-Nano/
-├── README.md                          # This file
-├── CPU vs GPU vs Tensorrt.ipynb       # Performance benchmark notebook
-├── color_detection.py                 # OpenCV color tracking (standalone)
+├── README.md
+├── CPU vs GPU vs Tensorrt.ipynb       # Original Jetson benchmark notebook
+├── color_detection.py                 # OpenCV color tracking (Jetson CSI camera)
 ├── object_tracking.py                 # Color tracking + ROS motor control
-├── Install_Yolov5_JetsonNano          # YOLOv5 setup guide for Jetpack 4.5
-├── Yolov5_Tensorrt_JetsonNano         # TensorRT + DeepStream optimization guide
-├── color_detection_pho.png            # Demo screenshots
-├── color_detection_pho1.png
-├── Lidar_mapping.png
-└── Yolov5 on tensorrt.png
+├── scripts/
+│   ├── run_cpu_gpu_benchmark.py       # Reproducible CPU vs GPU benchmark
+│   └── demo_color_detection.py        # Mac/PC demo using sample image
+├── notebooks/collision_avoidance/     # Full collision avoidance pipeline
+├── docs/                              # Additional project screenshots
+├── results/                           # Generated benchmark outputs
+├── Install_Yolov5_JetsonNano
+├── Yolov5_Tensorrt_JetsonNano
+└── *.png                              # Result screenshots
 ```
 
 ---

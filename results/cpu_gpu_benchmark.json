@@ -1,0 +1,21 @@
+{
+  "platform": "darwin",
+  "benchmarks": [
+    {
+      "device": "cpu",
+      "avg_batch_ms": 3313.8822317123413,
+      "batch_size": 32
+    },
+    {
+      "device": "mps",
+      "avg_batch_ms": 194.52078342437744,
+      "batch_size": 32
+    }
+  ],
+  "jetson_reference": {
+    "gpu_fps_yolov5": 6.5,
+    "tensorrt_fps_yolov5": 13.35,
+    "note": "Original YOLOv5 FPS measured on Jetson Nano with Jetpack 4.5"
+  },
+  "speedup": 17.04
+}
