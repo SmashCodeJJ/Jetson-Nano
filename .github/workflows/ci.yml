@@ -1,0 +1,37 @@
+name: Jetson Nano CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+
+jobs:
+  benchmark-and-demo:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+          cache: pip
+
+      - name: Install dependencies
+        run: |
+          pip install torch torchvision opencv-python-headless numpy
+
+      - name: Run CPU benchmark
+        run: python scripts/run_cpu_gpu_benchmark.py
+
+      - name: Run color detection demo
+        run: python scripts/demo_color_detection.py
+
+      - name: Upload results
+        uses: actions/upload-artifact@v4
+        with:
+          name: jetson-demo-results
+          path: results/

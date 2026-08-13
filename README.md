@@ -1,5 +1,7 @@
 # Exploring Computer Vision and Deep Learning with a Nvidia Jetson Robot
 
+![CI](https://github.com/SmashCodeJJ/Jetson-Nano/actions/workflows/ci.yml/badge.svg)
+
 **Author:** Youxin Zhuo ([SmashCodeJJ](https://github.com/SmashCodeJJ))  
 **Institution:** Penn State University  
 **Platform:** NVIDIA Jetson Nano · JetBot · ROS · PyTorch · OpenCV · TensorRT
