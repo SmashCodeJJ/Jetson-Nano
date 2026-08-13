@@ -3,7 +3,8 @@
 ![CI](https://github.com/SmashCodeJJ/Jetson-Nano/actions/workflows/ci.yml/badge.svg)
 
 **Author:** Youxin Zhuo ([SmashCodeJJ](https://github.com/SmashCodeJJ))  
-**Institution:** Penn State University  
+**Education:** B.S., Pennsylvania State University · Graduate Student, University of Pennsylvania (UPenn)  
+**Institution:** Penn State University (undergraduate project)  
 **Platform:** NVIDIA Jetson Nano · JetBot · ROS · PyTorch · OpenCV · TensorRT
 
 ---
